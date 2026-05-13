@@ -65,21 +65,24 @@ def main():
         include_package_data=True,
         python_requires=">=3.11",
         install_requires=[
-            'picamera>=1.13 ; platform_machine>="armv0l" and platform_machine<="armv9l"',
+            # picamera (legacy MMAL) is not pulled by default: it does not build or
+            # run on current Raspberry Pi OS / Debian trixie (libcamera stack, Py 3.13).
             'Pillow>=12.0.0',
-            'pygame>=1.9.6',
-            'pygame-menu==4.0.7',
+            'pygame>=2.2.0',
+            'pygame-menu>=4.0.7,<5',
             'pygame-vkeyboard>=2.0.8',
-            'psutil>=5.5.1',
-            'pluggy>=0.13.1',
-            'gpiozero>=1.5.1',
-            # RPi.GPIO backend for gpiozero (not always installed by default)
-            'RPi.GPIO>=0.7.0 ; platform_machine>="armv0l" and platform_machine<="armv9l"'
+            'psutil>=5.9.0',
+            'pluggy>=1.0.0',
+            'gpiozero>=2.0.0',
         ],
         extras_require={
-            'dslr': ['gphoto2>=2.0.0'],
+            'dslr': ['gphoto2>=2.3.0'],
             'printer': ['pycups>=1.9.73', 'pycups-notify>=0.0.4'],
-            'doc': docs_require
+            'doc': docs_require,
+            # Raspberry Pi Camera Module with the old MMAL stack only (pre-libcamera).
+            'legacy_picamera': ['picamera>=1.13'],
+            # RPi.GPIO pin factory for gpiozero on older boards/OS (not Pi 5).
+            'rpi_gpio': ['RPi.GPIO>=0.7.0'],
         },
         zip_safe=False,  # Don't install the lib as an .egg zipfile
         entry_points={'console_scripts': ["pibooth = pibooth.booth:main",

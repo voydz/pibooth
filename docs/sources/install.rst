@@ -30,8 +30,10 @@ Software
 * **Debian 13 (trixie)** or Raspberry Pi OS based on it (64-bit desktop image recommended), or another current Linux with Python 3.11 or newer
 * Python **3.13** (the default ``python3`` on trixie; 3.11+ is supported)
 * **Pillow** 12 or newer (installed automatically with ``pip``)
-* SDL2 (``libsdl2-2.0-0`` and related packages) for pygame
-* **libgphoto2** from trixie (or newer) if you use a DSLR; optional **CUPS** / ``libcups2`` for printing
+* **pygame** 2.2+ with SDL2 (``libsdl2-2.0-0`` and ``sudo apt install libsdl2-*``)
+* On a **Raspberry Pi** with GPIO buttons or LEDs: ``sudo apt install python3-lgpio`` so **gpiozero** 2.x can use the default pin factory (Pi 5 and trixie do not use ``RPi.GPIO``)
+* **Raspberry Pi Camera** on current OS is normally used via **OpenCV** (step 7); the legacy ``picamera`` module is optional (``pip install 'pibooth[legacy_picamera]'``) and only applies to old MMAL-based systems
+* **libgphoto2** from trixie (or newer) if you use a DSLR; optional **CUPS** / ``libcups2-dev`` for building printing extras
 
 
 Install
@@ -62,11 +64,18 @@ Manual procedure
         sudo apt-get update
         sudo apt-get full-upgrade
 
-4. Install SDL2 (and extras) which is required by ``pygame 2+``:
+4. Install SDL2 (and extras) which is required by ``pygame`` 2.x:
 
    .. code-block:: bash
 
         sudo apt-get install libsdl2-*
+
+   On a **Raspberry Pi** where you use GPIO (buttons, LEDs), also install the
+   default pin driver for **gpiozero** 2.x:
+
+   .. code-block:: bash
+
+        sudo apt install python3-lgpio
 
 5. Optionally install or upgrade ``gPhoto2`` (required only for a DSLR camera).
    On Debian trixie, ``sudo apt install gphoto2`` is often enough; a third-party
@@ -118,6 +127,10 @@ Manual procedure
           ``python3 -m pip install pibooth[printer]``
 
           ``python3 -m pip install pibooth`` installs ``pibooth`` without those extras.
+
+          Other optional extras: ``legacy_picamera`` (obsolete MMAL Pi Camera stack
+          only; not used on trixie / libcamera), ``rpi_gpio`` (``RPi.GPIO`` pin
+          factory for gpiozero on older Raspberry Pi OS, not Pi 5).
 
 Automated procedure
 ^^^^^^^^^^^^^^^^^^^
