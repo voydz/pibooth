@@ -7,6 +7,7 @@ import os
 import sys
 import time
 import os.path as osp
+import importlib.util
 import logging
 import psutil
 import platform
@@ -260,29 +261,31 @@ def open_text_editor(filename):
 
 
 def load_module(path):
-    """Load a Python module dynamically.
+    """Load a Python module dynamically from a filesystem path.
+
+    Uses :py:func:`importlib.util.spec_from_file_location` so plugins load
+    correctly on Python 3.12+ (legacy meta_path ``find_module`` / ``load_module``
+    are removed or deprecated).
     """
     if not osp.isfile(path):
         raise ValueError("Invalid Python module path '{}'".format(path))
 
-    dirname, filename = osp.split(path)
-    modname = osp.splitext(filename)[0]
+    modname = osp.splitext(osp.basename(path))[0]
+    spec = importlib.util.spec_from_file_location(modname, path)
+    if spec is None or spec.loader is None:
+        LOGGER.warning("Can not load Python module '%s' from '%s'", modname, path)
+        return None
 
-    if dirname not in sys.path:
-        sys.path.append(dirname)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[modname] = module
+    try:
+        spec.loader.exec_module(module)
+    except Exception:
+        sys.modules.pop(modname, None)
+        LOGGER.exception("Failed to load Python module '%s' from '%s'", modname, path)
+        return None
 
-    for hook in sys.meta_path:
-        if hasattr(hook, 'find_module'):
-            # Deprecated since Python 3.4
-            loader = hook.find_module(modname, [dirname])
-            if loader:
-                return loader.load_module(modname)
-        else:
-            spec = hook.find_spec(modname, [dirname])
-            if spec:
-                return spec.loader.load_module(modname)
-
-    LOGGER.warning("Can not load Python module '%s' from '%s'", modname, path)
+    return module
 
 
 def get_event_pos(display_size, event):

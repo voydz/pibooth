@@ -16,7 +16,7 @@ photos of your version.
    :alt: Background samples
 
 .. note:: Even if designed for a Raspberry Pi, this software may be installed on
-          any Unix/Linux based OS (tested on Ubuntu 16 and Mac OSX 10.14.6).
+          any Unix/Linux based OS (tested on Debian Trixie and recent Ubuntu).
 
 .. image:: images/gallery.png
    :align: center
@@ -77,9 +77,9 @@ Indices and tables
    :target: https://www.pibooth.org
    :align: middle
 
-.. |PythonVersions| image:: https://img.shields.io/badge/python-3.6+-red.svg
+.. |PythonVersions| image:: https://img.shields.io/badge/python-3.11+-blue.svg
    :target: https://www.python.org/downloads
-   :alt: Python 3.6+
+   :alt: Python 3.11+
 
 .. |PypiPackage| image:: https://badge.fury.io/py/pibooth.svg
    :target: https://pypi.org/project/pibooth

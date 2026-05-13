@@ -27,11 +27,11 @@ Hardware
 Software
 ^^^^^^^^
 
-* Raspberry Pi OS **Buster** (32 bit) with desktop (`could be downloaded here <https://downloads.raspberrypi.org/raspios_oldstable_armhf/images/>`_)
-* Python ``3.7.3``
-* libsdl2 ``2.0``
-* libgphoto2 ``2.5.27``
-* libcups ``2.2.10``
+* **Debian 13 (trixie)** or Raspberry Pi OS based on it (64-bit desktop image recommended), or another current Linux with Python 3.11 or newer
+* Python **3.13** (the default ``python3`` on trixie; 3.11+ is supported)
+* **Pillow** 12 or newer (installed automatically with ``pip``)
+* SDL2 (``libsdl2-2.0-0`` and related packages) for pygame
+* **libgphoto2** from trixie (or newer) if you use a DSLR; optional **CUPS** / ``libcups2`` for printing
 
 
 Install
@@ -46,8 +46,8 @@ installed. Instead of doing step 8. of the below procedure, follow
 Manual procedure
 ^^^^^^^^^^^^^^^^
 
-1. Download the Raspbian image and set-up an SD-card. You can follow
-   `these instructions <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_.
+1. Download a current `Raspberry Pi OS <https://www.raspberrypi.com/software/>`_ (or Debian) image and set up an SD card. You can follow
+   `these instructions <https://www.raspberrypi.com/documentation/computers/getting-started.html>`_.
 
 2. Insert the SD-card into the Raspberry Pi and fire it up. Use the
    ``raspi-config`` tool to configure your system (e.g., expand partition,
@@ -68,8 +68,9 @@ Manual procedure
 
         sudo apt-get install libsdl2-*
 
-5. Optionally install the last stable ``gPhoto2`` version (required only for
-   DSLR camera):
+5. Optionally install or upgrade ``gPhoto2`` (required only for a DSLR camera).
+   On Debian trixie, ``sudo apt install gphoto2`` is often enough; a third-party
+   updater script can install a newer upstream build if your camera needs it:
 
    .. code-block:: bash
 
@@ -93,24 +94,30 @@ Manual procedure
 
         sudo apt-get install python3-opencv
 
-8. Install ``pibooth`` from the `pypi repository <https://pypi.org/project/pibooth/>`_:
+8. Install ``pibooth`` from the `PyPI repository <https://pypi.org/project/pibooth/>`_.
+   On Debian trixie, system Python is *externally managed*, so use a virtual
+   environment (recommended) or pass ``--break-system-packages`` only if you
+   accept modifying the OS Python.
 
    .. code-block:: bash
 
-        sudo pip3 install pibooth[dslr,printer]
+        python3 -m venv ~/pibooth-venv
+        source ~/pibooth-venv/bin/activate
+        python3 -m pip install --upgrade pip
+        python3 -m pip install pibooth[dslr,printer]
 
    .. hint:: If you don't have ``gPhoto2`` and/or ``CUPS`` installed (steps 5. and/
           or 6. skipped), remove **printer** and/or **dslr** under the ``[]``.
 
-          As a consequence if you only want to use gphoto2 (step 6 skipped):
+          If you only use a DSLR (printer / step 6 skipped):
 
-          ``sudo pip3 install pibooth[dslr]`` 
-          
-          Or if you only want to use the printer (step 5 skipped):
+          ``python3 -m pip install pibooth[dslr]``
 
-          ``sudo pip3 install pibooth[printer]``
+          If you only use the printer (DSLR / step 5 skipped):
 
-          The classic command ``sudo pip3 install pibooth`` will install ``pibooth`` without these two dependencies (step 5 and 6 skipped).
+          ``python3 -m pip install pibooth[printer]``
+
+          ``python3 -m pip install pibooth`` installs ``pibooth`` without those extras.
 
 Automated procedure
 ^^^^^^^^^^^^^^^^^^^
